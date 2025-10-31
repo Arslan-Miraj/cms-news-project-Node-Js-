@@ -36,7 +36,7 @@ router.get('/add-user', addUserPage)
 router.post('/add-user', addUser)
 router.get('/update-user/:id', updateUserPage)
 router.post('/update-user/:id', updateUser)
-router.get('/delete-user/:id', deleteUser)
+router.delete('/delete-user/:id', deleteUser)
 
 
 // Category CRUD Routes
