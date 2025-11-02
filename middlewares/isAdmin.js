@@ -1,6 +1,6 @@
 const isAdmin =  (req, res, next) => {
     if (req.role == 'admin') {
-        next()  
+        return next()  
     }
     return res.redirect('/admin/dashboard')
    

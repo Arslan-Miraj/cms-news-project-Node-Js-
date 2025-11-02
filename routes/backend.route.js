@@ -47,7 +47,7 @@ router.get('/add-category', isLoggedIn, isAdmin, addCategoryPage)
 router.post('/add-category', isLoggedIn, isAdmin, addCategory)
 router.get('/update-category/:id', isLoggedIn, isAdmin, updateCategoryPage)
 router.post('/update-category/:id', isLoggedIn, isAdmin, updateCategory)
-router.get('/delete-category/:id', isLoggedIn, isAdmin, deleteCategory)
+router.delete('/delete-category/:id', isLoggedIn, isAdmin, deleteCategory)
 
 
 // Article CRUD Routes

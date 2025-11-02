@@ -45,7 +45,7 @@ const logout = async (req, res) => {
 // User Functions
 const allUser = async (req, res) => {
     const users = await userModel.find()
-    res.render('admin/users/user', { users, role: req.role })
+    return res.render('admin/users/user', { users, role: req.role })
 }
 
 const addUserPage = async (req, res) => {
@@ -54,7 +54,7 @@ const addUserPage = async (req, res) => {
 
 const addUser = async (req, res) => {
     await userModel.create(req.body)
-    res.redirect('/admin/users', { role: req.role })
+    return res.redirect('/admin/users')
 }
 
 const updateUserPage = async (req, res) => {
@@ -86,7 +86,7 @@ const updateUser = async (req, res) => {
 
         user.role = role || user.role
         await user.save()
-        res.redirect('/admin/users', { role: req.role } )
+        return res.redirect('/admin/users' )
     }
     catch (error) {
         return res.status(500).send(error.message)
@@ -100,7 +100,7 @@ const deleteUser = async (req, res) => {
         if (!user) {
             return res.status(404).send('User not found')
         }
-        res.json({success: true })
+        return res.json({success: true })
     }
     catch (error) {
         return res.status(500).send(error.message)

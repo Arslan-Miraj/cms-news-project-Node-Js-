@@ -32,6 +32,7 @@ var table = new Tabulator("#usersTable", {
   paginationSize:10,
   paginationSizeSelector:[10, 20, 50, 100],
   columns:[
+    {title:"#", formatter: "rownum", width: 60, hozAlign: "center"},
     {title:"Full Name", field:"full_name", headerFilter:"input"},
     {title:"User Name", field:"username", headerFilter:"input"},
     {title:"Role", field:"role", headerFilter:"input"},

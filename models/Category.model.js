@@ -9,7 +9,7 @@ const categorySchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
+        required: false,
     },
     slug: {
         type: String,
@@ -22,7 +22,7 @@ const categorySchema = new mongoose.Schema({
     }
 });
 
-categorySchema.pre('save', function(next) {
+categorySchema.pre('validate', function(next) {
     this.slug = slugify(this.name, { lower: true });
     next();
 })

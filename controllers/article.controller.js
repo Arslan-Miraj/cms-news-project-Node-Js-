@@ -3,7 +3,7 @@ const articleModel = require('../models/News.model')
 
 
 const allArticle = async (req, res) => {
-    res.render('admin/articles/article')
+    res.render('admin/articles/article', { role: req.role })
 }
 
 const addArticlePage = async (req, res) => {
