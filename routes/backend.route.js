@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const isLoggedIn = require('../middlewares/isLoggedIn');
 const isAdmin = require('../middlewares/isAdmin');
+const upload = require('../middlewares/multer')
 
 // Importing contoller functions
 const {
@@ -53,10 +54,10 @@ router.delete('/delete-category/:id', isLoggedIn, isAdmin, deleteCategory)
 // Article CRUD Routes
 router.get('/article', isLoggedIn, allArticle)
 router.get('/add-article', isLoggedIn, addArticlePage)
-router.post('/add-article', isLoggedIn, addArticle)
+router.post('/add-article', isLoggedIn, upload.single('image'), addArticle)
 router.get('/update-article/:id', isLoggedIn, updateArticlePage)
-router.post('/update-article/:id', isLoggedIn, updateArticle)
-router.get('/delete-article/:id', isLoggedIn, deleteArticle)
+router.post('/update-article/:id', isLoggedIn, upload.single('image'), updateArticle)
+router.delete('/delete-article/:id', isLoggedIn, deleteArticle)
 
 
 // Comment Management Routes
