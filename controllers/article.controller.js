@@ -2,6 +2,9 @@
 const articleModel = require('../models/News.model')
 const categoryModel = require('../models/Category.model')
 
+const fs = require('fs');
+const path = require('path');
+
 
 const allArticle = async (req, res) => {
     try {
@@ -98,6 +101,11 @@ const updateArticle = async (req, res) => {
         article.content = content;
         article.category = category;    
         if (image) {
+            // Delete old image file
+            if (article.image) {
+                const oldImagePath = path.join(__dirname, '../public/uploads', article.image);
+                fs.unlinkSync(oldImagePath);
+            }
             article.image = image;
         }
 
@@ -124,6 +132,14 @@ const deleteArticle = async (req, res) => {
                 return  res.status(403).send('Forbidden');
             }
         }
+
+        try {
+            const oldImagePath = path.join(__dirname, '../public/uploads', article.image);
+            fs.unlinkSync(oldImagePath);
+        } catch (error) {
+            console.log('Image not found or already deleted.');
+        }
+        
         await article.deleteOne();
         return res.json({success: true })
     }

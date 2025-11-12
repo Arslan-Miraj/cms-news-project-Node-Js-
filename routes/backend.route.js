@@ -6,7 +6,7 @@ const upload = require('../middlewares/multer')
 
 // Importing contoller functions
 const {
-    loginPage, adminLogin, logout, allUser, addUserPage, addUser, updateUserPage, updateUser, deleteUser, dashboardPage, settingsPage
+    loginPage, adminLogin, logout, allUser, addUserPage, addUser, updateUserPage, updateUser, deleteUser, dashboardPage, settingsPage, saveSettings
 } = require('../controllers/user.controller')
 
 const {
@@ -29,8 +29,9 @@ const {
 router.get('/', loginPage)
 router.post('/index', adminLogin)
 router.get('/logout', logout)
-router.get('/dashboard',isLoggedIn,  dashboardPage)
-router.get('/settings',isLoggedIn, isAdmin, settingsPage)
+router.get('/dashboard', isLoggedIn,  dashboardPage)
+router.get('/settings', isLoggedIn, isAdmin, settingsPage)
+router.post('/settings', isLoggedIn, isAdmin, upload.single('website_logo'), saveSettings)
 
 
 // User CRUD Routes
