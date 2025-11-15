@@ -65,4 +65,24 @@ router.delete('/delete-article/:id', isLoggedIn, deleteArticle)
 router.get('/comments', isLoggedIn, allComments)
 
 
+// Route Handler Middleware
+router.use(isLoggedIn, (req, res, next) => {
+    res.status(404).render('admin/404', { message: '404 Not Found', role: req.role});
+});
+
+router.use(isLoggedIn, (err, req, res, next) => {
+    console.error(err.stack);
+    const statusCode = err.status || 500;
+    if (statusCode === 403) {
+        return res.status(403).render('admin/403', { message: err.message || 'Forbidden', role: req.role});
+    } else if (statusCode === 404) {
+        return res.status(404).render('admin/404', { message: err.message || 'Not Found', role: req.role});
+    } else if (statusCode === 500) {
+        return res.status(500).render('admin/500', { message: err.message || 'Internal Server Error', role: req.role});
+    }
+    // const view = statusCode === 404 ? 'admin/404' : 'admin/500';
+    res.status(statusCode).render(view, { message: err.message || 'Something went wrong', role: req.role});
+});
+
+
 module.exports = router;

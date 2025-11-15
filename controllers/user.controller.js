@@ -8,6 +8,7 @@ const dotenv = require('dotenv')
 const { request } = require('express')
 const fs = require('fs');
 const path = require('path');
+const createError = require('../utils/error-message');
 
 
 dotenv.config();
@@ -20,17 +21,17 @@ const loginPage = async (req, res) => {
     })
 }
 
-const adminLogin = async (req, res) => {
+const adminLogin = async (req, res, next) => {
     const { username, password } = req.body;
     try {
         const user = await userModel.findOne({ username: username });
         if (!user) {
-            return res.status(401).send('Invalid username or password');
+            return 
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(401).send('Invalid username or password');
+            return next(createError('Invalid username or password', 401));
         }
 
         const jwt_data = { id: user._id, full_name: user.full_name, role: user.role };
@@ -38,7 +39,7 @@ const adminLogin = async (req, res) => {
         res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }); // 1 hour
         res.redirect('/admin/dashboard');
     } catch (error) {
-        return res.status(500).send(error.message);
+        next(error);
     }
 }
 
@@ -64,26 +65,26 @@ const addUser = async (req, res) => {
     return res.redirect('/admin/users')
 }
 
-const updateUserPage = async (req, res) => {
+const updateUserPage = async (req, res, next) => {
     try {
         const user = await userModel.findById(req.params.id)
         if (!user) {
-            return res.status(404).send('User not found')
+            return next(createError('User not found', 404))
         }
         res.render('admin/users/update-user', { user, role: req.role })
     } catch (error) {
-        return res.status(500).send(error.message)
+        next(error);
     }
     
 }
 
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
     const { full_name, password, role } = req.body
     try {
         const user =await userModel.findById(req.params.id)
         if (!user) {
-            return res.status(404).send('User not found')
+            return next(createError('User not found', 404))
         }
 
         user.full_name = full_name || user.full_name
@@ -96,25 +97,25 @@ const updateUser = async (req, res) => {
         return res.redirect('/admin/users' )
     }
     catch (error) {
-        return res.status(500).send(error.message)
+        next(error);
     }
 
 }
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
     try {
         const user = await userModel.findByIdAndDelete(req.params.id)
         if (!user) {
-            return res.status(404).send('User not found')
+            return next(createError('User not found', 404))
         }
         return res.json({success: true })
     }
     catch (error) {
-        return res.status(500).send(error.message)
+        next(error);
     }
 }
 
-const dashboardPage = async (req, res) => {
+const dashboardPage = async (req, res, next) => {
     try {
         let articles_count;
         req.role === 'author' ? articles_count = await articleModel.countDocuments({ author: req.id}) : articles_count = await articleModel.countDocuments();
@@ -124,23 +125,21 @@ const dashboardPage = async (req, res) => {
         // console.log(users, articles, categories)
         res.render('admin/dashboard', { users_count, articles_count, categories_count, full_name: req.full_name, role: req.role })
     } catch (error) {
-        console.log(error)
-        res.status(500).send('Dashboard Not Found');
+        next(error);
     }
     
 }
 
-const settingsPage = async (req, res) => {
+const settingsPage = async (req, res, next) => {
     try {
         const settings = await settingsModel.findOne();
         res.render('admin/settings', { role: req.role, settings })
     } catch (error) {
-        console.log(error)
-        res.status(500).send('Settings Not Found');
+        next(error);
     }
 }
 
-const saveSettings = async (req, res) => {
+const saveSettings = async (req, res, next) => {
     const { web_title, footer_description} = req.body;
     const website_logo = req.file ? req.file.filename : null;
 
@@ -165,7 +164,7 @@ const saveSettings = async (req, res) => {
                     fs.unlinkSync(oldImagePath);
                 }
             }
-            console.log(settings);
+            // console.log(settings);
             await settings.save();
         } else {
             // Create new settings document
@@ -178,8 +177,7 @@ const saveSettings = async (req, res) => {
         }
         res.redirect('/admin/settings');
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error saving settings');
+        next(error);
     }
     
 }

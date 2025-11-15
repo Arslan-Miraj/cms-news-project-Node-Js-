@@ -1,4 +1,5 @@
 const categoryModel = require('../models/Category.model')
+const createError = require('../utils/error-message');
 
 
 const allCategory = async (req, res) => {
@@ -11,32 +12,32 @@ const addCategoryPage = async (req, res) => {
 }
 
 
-const addCategory = async (req, res) => {
+const addCategory = async (req, res, next) => {
     try {
         await categoryModel.create(req.body);
         return res.redirect('/admin/category');
     } catch (error) {
-        return res.status(500).send(error.message);
+        next(error);
     }
 }
 
 
-const updateCategoryPage = async (req, res) => {
+const updateCategoryPage = async (req, res, next) => {
     try {
         const category = await categoryModel.findById(req.params.id)
         res.render('admin/categories/update-category', { category, role: req.role })
     } catch (error) {
-        return res.status(500).send(error.message)
+        next(error);
     }
 }
 
 
-const updateCategory = async (req, res) => {
+const updateCategory = async (req, res, next) => {
     const { name, description } = req.body
     try {
         const category = await categoryModel.findById(req.params.id)
         if (!category) {
-            return res.status(404).send('Category not found')
+            return next
         }
         category.name = name ||  category.name
         category.description = description || category.description
@@ -44,22 +45,22 @@ const updateCategory = async (req, res) => {
         return res.redirect('/admin/category' )
     }
     catch (error) {
-        return res.status(500).send(error.message)
+        next(error);
     }
 }
 
 
-const deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res, next) => {
     const id = req.params.id
     try {
         const category = await categoryModel.findByIdAndDelete(id)
         if (!category) {
-            return res.status(404).send('Category not found')
+            return next(createError('Category not found', 404))
         }
         res.json({success: true })
     }
     catch (error) {
-        return res.status(500).send(error.message)
+        next(error);
     }
 }
 
