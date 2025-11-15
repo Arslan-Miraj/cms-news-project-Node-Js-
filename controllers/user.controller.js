@@ -9,6 +9,7 @@ const { request } = require('express')
 const fs = require('fs');
 const path = require('path');
 const createError = require('../utils/error-message');
+const { validationResult } = require('express-validator');;
 
 
 dotenv.config();
@@ -16,12 +17,22 @@ dotenv.config();
 
 // Login Functions
 const loginPage = async (req, res) => {
-    res.render('admin/login', {
-        layout: false
+    return res.render('admin/login', {
+        layout: false,
+        errors: 0,
     })
 }
 
 const adminLogin = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        // return res.status(400).json({ errors: errors.array() });
+        return res.render('admin/login', {
+            layout: false,
+            errors: errors.array(),
+        })
+
+    }
     const { username, password } = req.body;
     try {
         const user = await userModel.findOne({ username: username });
@@ -57,10 +68,20 @@ const allUser = async (req, res) => {
 }
 
 const addUserPage = async (req, res) => {
-    res.render('admin/users/add-user', { role: req.role })
+    res.render('admin/users/add-user', { role: req.role, errors: 0 })
 }
 
 const addUser = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        // return res.status(400).json({ errors: errors.array() });
+        return res.render('admin/users/add-user', {
+            role: req.role,
+            errors: errors.array(),
+        })
+
+    }
+
     await userModel.create(req.body)
     return res.redirect('/admin/users')
 }

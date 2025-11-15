@@ -4,6 +4,10 @@ const isLoggedIn = require('../middlewares/isLoggedIn');
 const isAdmin = require('../middlewares/isAdmin');
 const upload = require('../middlewares/multer')
 
+
+// Validation Middlewares
+const validation = require('../middlewares/validation');
+
 // Importing contoller functions
 const {
     loginPage, adminLogin, logout, allUser, addUserPage, addUser, updateUserPage, updateUser, deleteUser, dashboardPage, settingsPage, saveSettings
@@ -27,7 +31,7 @@ const {
 
 // Login Route Handlers
 router.get('/', loginPage)
-router.post('/index', adminLogin)
+router.post('/index', validation.loginValidationRules, adminLogin)
 router.get('/logout', logout)
 router.get('/dashboard', isLoggedIn,  dashboardPage)
 router.get('/settings', isLoggedIn, isAdmin, settingsPage)
@@ -37,7 +41,7 @@ router.post('/settings', isLoggedIn, isAdmin, upload.single('website_logo'), sav
 // User CRUD Routes
 router.get('/users', isLoggedIn, isAdmin, allUser)
 router.get('/add-user', isLoggedIn, isAdmin, addUserPage)
-router.post('/add-user', isLoggedIn, isAdmin, addUser)
+router.post('/add-user', isLoggedIn, isAdmin, validation.userValidationRules, addUser)
 router.get('/update-user/:id', isLoggedIn, isAdmin, updateUserPage)
 router.post('/update-user/:id', isLoggedIn, isAdmin, updateUser)
 router.delete('/delete-user/:id', isLoggedIn, isAdmin, deleteUser)
