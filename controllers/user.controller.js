@@ -9,7 +9,7 @@ const { request } = require('express')
 const fs = require('fs');
 const path = require('path');
 const createError = require('../utils/error-message');
-const { validationResult } = require('express-validator');;
+const { validationResult } = require('express-validator');
 
 
 dotenv.config();

@@ -2,6 +2,7 @@
 const articleModel = require('../models/News.model')
 const categoryModel = require('../models/Category.model')
 const createError = require('../utils/error-message');
+const { validationResult } = require('express-validator');
 
 const fs = require('fs');
 const path = require('path');
@@ -29,11 +30,16 @@ const allArticle = async (req, res, next) => {
 
 const addArticlePage = async (req, res) => {
     const categories = await categoryModel.find();
-    res.render('admin/articles/add-article', { role: req.role, categories })
+    res.render('admin/articles/add-article', { role: req.role, categories, errors: 0  })
 }
 
 
 const addArticle = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const categories = await categoryModel.find();
+        return res.render('admin/articles/add-article', { role: req.role, categories, errors: errors.array() })
+    }
     try {
         const { title, content, category } = req.body;
         console.log(title)
@@ -80,7 +86,7 @@ const updateArticlePage = async (req, res, next) => {
 
         const categories = await categoryModel.find()
         // res.json(categories)
-        res.render('admin/articles/update-article', { role: req.role, article, categories })
+        res.render('admin/articles/update-article', { role: req.role, article, categories, errors: 0 } )
     }
     catch (error) {
         next(error);
@@ -90,6 +96,12 @@ const updateArticlePage = async (req, res, next) => {
 
 
 const updateArticle = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const article = await articleModel.findById(req.params.id).populate('category', 'name');
+        const categories = await categoryModel.find()
+        return res.render('admin/articles/update-article', { role: req.role, article, categories, errors: errors.array() })
+    }
     try {
         const { title, content, category } = req.body;
         const image = req.file ? req.file.filename : null;

@@ -1,5 +1,5 @@
 const commentsModel = require('../models/Comments.model')
-
+const { validationResult } = require('express-validator');
 
 const allComments = async (req, res) => {
     

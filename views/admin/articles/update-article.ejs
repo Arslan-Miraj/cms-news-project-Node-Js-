@@ -12,11 +12,11 @@
           <form action="/admin/update-article/<%= article._id %>" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="article_title" class="form-label">Title</label>
-                <input type="text" name="title" id="article_title" class="form-control" autocomplete="off" required value="<%= article.title %>">
+                <input type="text" name="title" id="article_title" class="form-control" autocomplete="off" value="<%= article.title %>">
             </div>
             <div class="mb-3">
                 <label for="summernote" class="form-label">Description</label>
-                <textarea name="content" id="summernote" class="form-control" rows="5"  required><%= article.content %></textarea>
+                <textarea name="content" id="summernote" class="form-control" rows="5"><%= article.content %></textarea>
             </div>
             <div class="mb-3">
                 <label for="article_category" class="form-label">Category</label>
@@ -37,7 +37,7 @@
           </form>
           <!--/Form -->
 
-          <%- include('partials/error') %>
+          <%- include('../partials/error') %>
           
         </div>
       </div>
